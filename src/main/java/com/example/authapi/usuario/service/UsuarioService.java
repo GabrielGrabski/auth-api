@@ -1,6 +1,8 @@
 package com.example.authapi.usuario.service;
 
+import com.example.authapi.comum.exception.enums.EErrors;
 import com.example.authapi.comum.exception.model.ValidacaoException;
+import com.example.authapi.usuario.dto.UsuarioResponse;
 import com.example.authapi.usuario.enums.ESituacao;
 import com.example.authapi.usuario.model.Usuario;
 import com.example.authapi.usuario.repository.UsuarioRepository;
@@ -18,6 +20,13 @@ public class UsuarioService implements UserDetailsService {
 
     @Autowired
     private UsuarioRepository repository;
+
+    public UsuarioResponse findById(Integer id) {
+        var usuario = repository
+                .findById(id)
+                .orElseThrow(() -> new ValidacaoException(USUARIO_NAO_ENCONTRADO.getDescricao()));
+        return UsuarioResponse.of(usuario);
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

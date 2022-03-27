@@ -41,7 +41,7 @@ public class Usuario implements UserDetails {
     @Enumerated(EnumType.STRING)
     private ESituacao situacao;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "USUARIO_FUNCIONALIDADE",
             joinColumns = @JoinColumn(name = "USUARIO_ID"),
             inverseJoinColumns = @JoinColumn(name = "FUNCIONALIDADE_ID"))
@@ -50,7 +50,7 @@ public class Usuario implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return funcionalidades.stream()
-                .map(funcionalidade -> new SimpleGrantedAuthority(funcionalidade.getDescricao()))
+                .map(funcionalidade -> new SimpleGrantedAuthority(funcionalidade.getCodigo().toString()))
                 .collect(Collectors.toList());
     }
 

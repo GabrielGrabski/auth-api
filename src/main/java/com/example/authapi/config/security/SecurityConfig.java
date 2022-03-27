@@ -2,6 +2,7 @@ package com.example.authapi.config.security;
 
 import com.example.authapi.config.security.token.filter.TokenFilter;
 import com.example.authapi.config.security.token.service.TokenService;
+import com.example.authapi.funcionalidade.enums.EFuncionalidade;
 import com.example.authapi.usuario.repository.UsuarioRepository;
 import com.example.authapi.usuario.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(new TokenFilter(tokenService, usuarioRepository), UsernamePasswordAuthenticationFilter.class)
                 .csrf().disable()
                 .authorizeRequests()
+                .antMatchers("/api/usuario/**")
+                .hasAuthority(EFuncionalidade.ADMIN_001.toString())
                 .antMatchers(permitAll).permitAll();
     }
 }

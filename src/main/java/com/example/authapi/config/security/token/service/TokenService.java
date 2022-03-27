@@ -45,7 +45,7 @@ public class TokenService {
     }
 
     public Integer getUsuarioId(String token) {
-        return Integer.getInteger(getTokenClaims(token)
+        return Integer.parseInt(getTokenClaims(token)
                 .getBody()
                 .getSubject());
     }
