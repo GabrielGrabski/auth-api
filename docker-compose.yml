@@ -1,0 +1,15 @@
+version: '4'
+
+services:
+  database:
+    container_name: databasedddddddd
+    image: postgres:16.2
+    restart: unless-stopped
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: root
+volumes:
+  postgres:
