@@ -2,7 +2,7 @@ version: '4'
 
 services:
   database:
-    container_name: databasedddddddd
+    container_name: database
     image: postgres:16.2
     restart: unless-stopped
     volumes:
