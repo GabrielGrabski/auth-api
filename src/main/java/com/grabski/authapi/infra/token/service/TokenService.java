@@ -3,7 +3,9 @@ package com.grabski.authapi.infra.token.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
-import com.grabski.authapi.modules.user.model.User;
+import com.grabski.authapi.common.errors.messages.ErrorMessages;
+import com.grabski.authapi.common.errors.model.exception.TokenGenerationException;
+import com.grabski.authapi.common.errors.model.exception.TokenValidationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +28,7 @@ public class TokenService {
                     .withExpiresAt(getExpirationDate())
                     .sign(algorithm);
         } catch (JWTCreationException exception) {
-            throw new RuntimeException("Cannot generate token");
+            throw new TokenGenerationException(ErrorMessages.CANNOT_GENERATE_TOKEN.getMessage());
         }
     }
 
@@ -39,7 +41,7 @@ public class TokenService {
                     .verify(token)
                     .getSubject();
         } catch (Exception ex) {
-            throw new RuntimeException("Cannot validate token");
+            throw new TokenValidationException(ErrorMessages.CANNOT_VALIDATE_TOKEN.getMessage());
         }
     }
 

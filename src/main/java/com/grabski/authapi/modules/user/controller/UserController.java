@@ -1,6 +1,7 @@
 package com.grabski.authapi.modules.user.controller;
 
 import com.grabski.authapi.common.dto.GenericRestResponse;
+import com.grabski.authapi.modules.user.dto.UpdateRoleUserRequest;
 import com.grabski.authapi.modules.user.dto.UserRequest;
 import com.grabski.authapi.modules.user.model.User;
 import com.grabski.authapi.modules.user.service.UserService;
@@ -27,6 +28,11 @@ public class UserController {
 
     @PostMapping
     public GenericRestResponse<String> createUser(@RequestBody UserRequest request) {
-        return service.createUser(request);
+        return service.register(request);
+    }
+
+    @PatchMapping("update-role")
+    public GenericRestResponse<String> updateUser(@RequestBody UpdateRoleUserRequest request) {
+        return service.updateRole(request);
     }
 }
