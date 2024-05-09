@@ -1,14 +1,14 @@
 package com.grabski.authapi.modules.user.service;
 
 import com.grabski.authapi.common.dto.GenericRestResponse;
-import com.grabski.authapi.common.errors.messages.ErrorMessages;
-import com.grabski.authapi.common.errors.model.exception.UserRegistrationException;
 import com.grabski.authapi.common.messages.SuccessMessages;
 import com.grabski.authapi.modules.user.dto.UpdateRoleUserRequest;
 import com.grabski.authapi.modules.user.dto.UserRequest;
-import com.grabski.authapi.modules.user.enums.role.Role;
-import com.grabski.authapi.modules.user.model.User;
+import com.grabski.authapi.modules.user.dto.UserResponse;
+import com.grabski.authapi.modules.user.dto.UserUpdateRequest;
 import com.grabski.authapi.modules.user.repository.UserRepository;
+import com.grabski.authapi.modules.user.utils.UserGenerator;
+import com.grabski.authapi.modules.user.utils.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,23 +29,22 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Page<User> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<UserResponse> findAll(Pageable pageable) {
+        return repository.findAll(pageable)
+                .map(user -> new UserResponse(user.getEmail(), user.getName(), user.getRole()));
     }
 
     public GenericRestResponse<String> register(UserRequest request) {
-        validateAdminRole(request);
-
-        repository.save(User.builder()
-                .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
-                .name(request.name())
-                .role(request.role())
-                .build());
-
+        UserValidation.validateUserRegistration(request);
+        repository.save(UserGenerator.from(request, passwordEncoder.encode(request.password())));
         return new GenericRestResponse<>(201,
-                format(SuccessMessages.USER_REGISTERED.getMessage(), request.email())
-        );
+                format(SuccessMessages.USER_REGISTERED.getMessage(), request.email()));
+    }
+
+    public GenericRestResponse<String> update(UserUpdateRequest request) {
+        var user = repository.findById(request.id()).orElseThrow();
+        repository.save(UserGenerator.mapUserFromRequest(user, request));
+        return new GenericRestResponse<>(200, SuccessMessages.USER_UPDATED.getMessage());
     }
 
     public GenericRestResponse<String> updateRole(UpdateRoleUserRequest request) {
@@ -55,11 +54,6 @@ public class UserService {
         repository.save(user);
 
         return new GenericRestResponse<>(200,
-                format(SuccessMessages.USER_UPDATED.getMessage(), request.email(), request.role()));
-    }
-
-    private void validateAdminRole(UserRequest request) {
-        if (Role.ADMIN.equals(request.role()))
-            throw new UserRegistrationException(ErrorMessages.CANNOT_REGISTER_ADMIN_USER.getMessage());
+                format(SuccessMessages.USER_ROLE_UPDATED.getMessage(), request.email(), request.role()));
     }
 }

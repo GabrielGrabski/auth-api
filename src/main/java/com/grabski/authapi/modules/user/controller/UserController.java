@@ -3,8 +3,10 @@ package com.grabski.authapi.modules.user.controller;
 import com.grabski.authapi.common.dto.GenericRestResponse;
 import com.grabski.authapi.modules.user.dto.UpdateRoleUserRequest;
 import com.grabski.authapi.modules.user.dto.UserRequest;
-import com.grabski.authapi.modules.user.model.User;
+import com.grabski.authapi.modules.user.dto.UserResponse;
+import com.grabski.authapi.modules.user.dto.UserUpdateRequest;
 import com.grabski.authapi.modules.user.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,17 +24,22 @@ public class UserController {
     }
 
     @GetMapping
-    public Page<User> findAll(Pageable pageable) {
+    public Page<UserResponse> findAll(Pageable pageable) {
         return service.findAll(pageable);
     }
 
     @PostMapping
-    public GenericRestResponse<String> createUser(@RequestBody UserRequest request) {
+    public GenericRestResponse<String> createUser(@RequestBody @Valid UserRequest request) {
         return service.register(request);
     }
 
     @PatchMapping("update-role")
-    public GenericRestResponse<String> updateUser(@RequestBody UpdateRoleUserRequest request) {
+    public GenericRestResponse<String> updateRole(@RequestBody UpdateRoleUserRequest request) {
         return service.updateRole(request);
+    }
+
+    @PutMapping
+    public GenericRestResponse<String> updateUser(@RequestBody UserUpdateRequest request) {
+        return service.update(request);
     }
 }
